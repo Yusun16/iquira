@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import Navegacion from "./plantilla/Navegacion";
+import Login from "./Inicio/InicioSesion";
+import Dasboard from "./Dasboard/Dasboard";
+import CreacionUsuarios from "./CreacionUsuario/CreacionUsuarios";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <BrowserRouter>
+      <Layout />
+    </BrowserRouter>
+  );
+}
+
+function Layout() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/";
+  const isCreacionUsuarioPage = location.pathname === "/creacionusuario";
+
+  return (
+    <div>
+      <div className="container">
+        {!isLoginPage && !isCreacionUsuarioPage && <Navegacion />}
+      </div>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dasboard" element={<Dasboard />} />
+        <Route path="/creacionusuario" element={<CreacionUsuarios />} />
+      </Routes>
     </div>
   );
 }
 
 export default App;
+
