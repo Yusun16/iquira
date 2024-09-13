@@ -2,11 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import logo from "../Inicio/img/logo.jpg";
 
-export default function InicioSesion() {
+export default function OlvidarContraseña() {
   const navigate = useNavigate(); // Usa useNavigate para obtener la función de navegación
 
   const handleLoginClick = () => {
-    navigate('/dasboard'); // Redirige al usuario a /dasboard
+    navigate('/'); // Redirige al usuario a /dasboard
   };
 
   return (
@@ -28,7 +28,7 @@ export default function InicioSesion() {
                     <div className="card-body p-4 p-lg-5 text-black">
                       <form>
                         <h5 className="fw-normal mb-3 pb-3" style={{ letterSpacing: '1px' }}>
-                          Sign into your account
+                          ¿olvidaste tu contraseña?
                         </h5>
                         <div className="form-outline mb-4">
                           <label className="form-label" htmlFor="form2Example17">
@@ -40,32 +40,15 @@ export default function InicioSesion() {
                             className="form-control form-control-lg"
                           />
                         </div>
-                        <div className="form-outline mb-4">
-                          <label className="form-label" htmlFor="form2Example27">
-                            Contraseña
-                          </label>
-                          <input
-                            type="password"
-                            id="form2Example27"
-                            className="form-control form-control-lg"
-                          />
-                        </div>
                         <div className="pt-1 mb-4">
                           <button
                             className="btn btn-dark btn-lg btn-block"
                             type="button"
                             onClick={handleLoginClick} // Usa onClick para manejar la navegación
                           >
-                            Login
+                            Recuperar contraseña
                           </button>
                         </div>
-                        <a className="small text-muted" href="http://localhost:3000/olvidarcontrase%C3%B1a">
-                          ¿Has olvidado tu contraseña?
-                        </a>
-                        <p></p>
-                        <a href="" className="small text-muted">
-                          Condiciones de uso.
-                        </a>
                       </form>
                     </div>
                   </div>

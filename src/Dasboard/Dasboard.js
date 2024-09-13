@@ -28,8 +28,8 @@ function Dashboard() {
     labels: period === 'semana'
       ? ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5']
       : period === 'quincena'
-      ? ['Quincena 1', 'Quincena 2', 'Quincena 3', 'Quincena 4']
-      : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        ? ['Quincena 1', 'Quincena 2', 'Quincena 3', 'Quincena 4']
+        : ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
     datasets: [
       {
         label: 'Documentos Procesados',
@@ -114,11 +114,24 @@ function Dashboard() {
             <div className="col-md-6 mb-3">
               <div className="card p-3">
                 <h3>Actividades Recientes</h3>
-                <ul className="list-unstyled">
-                  <li>Actividad 1</li>
-                  <li>Actividad 2</li>
-                  <li>Actividad 3</li>
-                </ul>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"/>
+                    <label class="form-check-label" for="defaultCheck1">
+                      Actividad 1
+                    </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"/>
+                    <label class="form-check-label" for="defaultCheck1">
+                      Actividad 2
+                    </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="defaultCheck1"/>
+                    <label class="form-check-label" for="defaultCheck1">
+                      Actividad 2
+                    </label>
+                </div>
               </div>
             </div>
           </div>
