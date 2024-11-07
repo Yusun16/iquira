@@ -28,7 +28,7 @@ export default function InicioSesion() {
                     <div className="card-body p-4 p-lg-5 text-black">
                       <form>
                         <h5 className="fw-normal mb-3 pb-3" style={{ letterSpacing: '1px' }}>
-                          Sign into your account
+                          Inicia sesión en tu cuenta
                         </h5>
                         <div className="form-outline mb-4">
                           <label className="form-label" htmlFor="form2Example17">
