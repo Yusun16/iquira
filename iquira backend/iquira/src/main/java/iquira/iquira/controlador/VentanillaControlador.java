@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import iquira.iquira.modelo.Dto.ApiResponseDto;
 import iquira.iquira.modelo.Ventanilla;
 import iquira.iquira.servicio.IVentanillaServicio;
-
-
 import java.util.List;
 
 @RestController
@@ -31,7 +29,7 @@ public class VentanillaControlador {
     @GetMapping("/formularios")
     public List<Ventanilla> obtenerFormularios() {
         var formularios = ventanillaServicio.listarFormularios();
-        formularios.forEach((formulario -> logger.info(formulario.toString())));
+        formularios.forEach(formulario -> logger.info(formulario.toString()));
         return formularios;
     }
 
@@ -51,7 +49,10 @@ public class VentanillaControlador {
     }
 
     @PutMapping("/formularios/{id}")
-    public ResponseEntity<ApiResponseDto<Ventanilla>> actualizarFormulario(@PathVariable Long id, @RequestBody Ventanilla formulario) {
+    public ResponseEntity<ApiResponseDto<Ventanilla>> actualizarFormulario(
+            @PathVariable Long id,
+            @RequestBody Ventanilla formulario
+    ) {
         try {
             ventanillaServicio.actualizarFormulario(id, formulario);
             return ResponseEntity.ok(new ApiResponseDto<>("Formulario actualizado", null, true));
@@ -60,4 +61,3 @@ public class VentanillaControlador {
         }
     }
 }
-

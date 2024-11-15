@@ -6,6 +6,7 @@ import CreacionUsuarios from "./CreacionUsuario/CreacionUsuarios";
 import OlvidarContraseña from "./OlvidarContraseña/OlvidarContraseña";
 import Ventanilla from "./Ventanilla/ventanilla";
 import Envio from "./Envio/Envio";
+import Gobierno from "./Dependencias/Gobierno";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function Layout() {
         <Route path="/olvidarcontraseña" element={<OlvidarContraseña />} />
         <Route path="/ventanilla" element={<Ventanilla />} />
         <Route path="/envio" element={<Envio />} />
+        <Route path="/gobierno" element={<Gobierno/>}/>
       </Routes>
     </div>
   );

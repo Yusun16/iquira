@@ -4,7 +4,6 @@ import iquira.iquira.modelo.Ventanilla;
 import iquira.iquira.repositorio.VentanillaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
@@ -57,11 +56,8 @@ public class VentanillaServicio implements IVentanillaServicio {
     public String obtenerSiguienteNumeroRadicado() {
         Optional<Ventanilla> ultimoFormulario = ventanillaRepository.findTopByOrderByNumeroRadicadoDesc();
         int siguienteRadicado = ultimoFormulario.map(f -> f.getNumeroRadicado() + 1).orElse(1);
-
-        // Formatear el radicado como un número de cuatro dígitos (ej. 0001)
         return String.format("%04d", siguienteRadicado);
     }
-
 
     private void updateNonNullProperties(Ventanilla source, Ventanilla target) {
         Field[] fields = Ventanilla.class.getDeclaredFields();

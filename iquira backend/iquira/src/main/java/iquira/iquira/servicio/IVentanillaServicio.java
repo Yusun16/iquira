@@ -1,7 +1,6 @@
 package iquira.iquira.servicio;
 
 import iquira.iquira.modelo.Ventanilla;
-
 import java.util.List;
 
 public interface IVentanillaServicio {
@@ -18,5 +17,5 @@ public interface IVentanillaServicio {
 
     void actualizarFormulario(Long id, Ventanilla formulario) throws Exception;
 
-    String obtenerSiguienteNumeroRadicado(); // Nuevo método para obtener el próximo número de radicado
+    String obtenerSiguienteNumeroRadicado();
 }

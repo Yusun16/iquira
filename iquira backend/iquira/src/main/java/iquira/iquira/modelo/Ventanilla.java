@@ -18,6 +18,16 @@ public class Ventanilla {
     private String notificacion;
     private String tipoDocumento;
     private String documento;
+    private String dependencia; // Nuevo campo dependencia
+
+    // Getter y setter para dependencia
+    public String getDependencia() {
+        return dependencia;
+    }
+
+    public void setDependencia(String dependencia) {
+        this.dependencia = dependencia;
+    }
 
     // Getter y setter para numeroRadicado
     public int getNumeroRadicado() {

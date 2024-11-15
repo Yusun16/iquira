@@ -4,20 +4,19 @@ import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
 import '../index.css';
 
 export default function Ventanilla() {
-  const [radicado, setRadicado] = useState(''); // Empieza vacío para cargar desde el backend
+  const [radicado, setRadicado] = useState('');
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
-  const [fecha, setFecha] = useState('');
+  const [fecha, setFecha] = useState(getFormattedDate());
   const [telefono, setTelefono] = useState('');
   const [notificacion, setNotificacion] = useState('correo');
-  const [dependencia, setDependencia] = useState('Gobierno'); // Nuevo estado para dependencia
-  const [tipoDocumento, setTipoDocumento] = useState('');
+  const [dependencia, setDependencia] = useState('Gobierno');
+  const [tipoDocumento, setTipoDocumento] = useState('Peticiones');
   const [documento, setDocumento] = useState(null);
   const [data, setData] = useState([]); 
 
   const API_URL = 'http://localhost:8080/api/ventanilla';
 
-  // Obtener datos del backend y el siguiente número de radicado al cargar el componente
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,14 +35,16 @@ export default function Ventanilla() {
   const handleSiguiente = async (e) => {
     e.preventDefault();
 
+    const formattedDateForBackend = formatDateForBackend(fecha);
+
     const newEntry = {
       numeroRadicado: parseInt(radicado),
       nombre,
       apellido,
-      fecha,
+      fecha: formattedDateForBackend,
       telefono,
       notificacion,
-      dependencia, // Añadido al objeto de entrada
+      dependencia,
       tipoDocumento,
       documento: documento ? documento.name : '',
     };
@@ -52,23 +53,46 @@ export default function Ventanilla() {
       await axios.post(`${API_URL}/formularios`, newEntry);
       setData((prevData) => [...prevData, newEntry]);
 
-      // Obtener y establecer el siguiente radicado para el próximo formulario
       const radicadoResponse = await axios.get(`${API_URL}/siguiente-radicado`);
       setRadicado(radicadoResponse.data);
 
-      // Limpiar los campos del formulario después de guardar
       setNombre('');
       setApellido('');
-      setFecha('');
       setTelefono('');
       setNotificacion('correo');
-      setDependencia('Gobierno'); // Reinicia dependencia
-      setTipoDocumento('');
+      setDependencia('Gobierno');
+      setTipoDocumento('Peticiones');
       setDocumento(null);
     } catch (error) {
       console.error("Error al enviar el formulario:", error);
     }
   };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const allowedExtensions = /(\.pdf|\.docx|\.doc|\.xls|\.xlsx)$/i;
+
+    if (file && allowedExtensions.test(file.name)) {
+      setDocumento(file);
+    } else {
+      alert('Solo se permiten archivos PDF, Excel o Word.');
+      e.target.value = null;
+      setDocumento(null);
+    }
+  };
+
+  function getFormattedDate() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  function formatDateForBackend(date) {
+    const [day, month, year] = date.split('/');
+    return `${year}-${month}-${day}`; // Formato yyyy-MM-dd
+  }
 
   const columns = useMemo(() => [
     { accessorKey: 'numeroRadicado', header: 'Número de Radicado', size: 150 },
@@ -109,7 +133,7 @@ export default function Ventanilla() {
 
         <div className="field">
           <label>Fecha</label>
-          <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} required className="input" />
+          <input type="text" value={fecha} readOnly className="input" />
         </div>
 
         <div className="field">
@@ -141,12 +165,23 @@ export default function Ventanilla() {
 
         <div className="field">
           <label>Tipo de Documento o Petición</label>
-          <input type="text" value={tipoDocumento} onChange={(e) => setTipoDocumento(e.target.value)} required className="input" />
+          <select value={tipoDocumento} onChange={(e) => setTipoDocumento(e.target.value)} required className="input">
+            <option value="Peticiones">Peticiones</option>
+            <option value="Quejas">Quejas</option>
+            <option value="Reclamos">Reclamos</option>
+            <option value="Sugerencias">Sugerencias</option>
+          </select>
         </div>
 
         <div className="field">
           <label>Documento a Subir</label>
-          <input type="file" onChange={(e) => setDocumento(e.target.files[0])} required className="input" />
+          <input 
+            type="file" 
+            onChange={handleFileChange} 
+            required 
+            className="input" 
+            accept=".pdf, .doc, .docx, .xls, .xlsx" 
+          />
         </div>
 
         <button type="submit" className="button">Siguiente</button>
