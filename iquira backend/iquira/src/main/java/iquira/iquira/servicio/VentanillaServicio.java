@@ -4,6 +4,7 @@ import iquira.iquira.modelo.Ventanilla;
 import iquira.iquira.repositorio.VentanillaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +60,12 @@ public class VentanillaServicio implements IVentanillaServicio {
         return String.format("%04d", siguienteRadicado);
     }
 
+    @Override
+    public List<Ventanilla> obtenerFormulariosPorDependencia(String dependencia) {
+        return ventanillaRepository.findByDependencia(dependencia);
+    }
+
+    // Método auxiliar para actualizar solo los campos no nulos
     private void updateNonNullProperties(Ventanilla source, Ventanilla target) {
         Field[] fields = Ventanilla.class.getDeclaredFields();
         for (Field field : fields) {

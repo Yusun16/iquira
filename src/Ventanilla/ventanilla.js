@@ -13,7 +13,7 @@ export default function Ventanilla() {
   const [dependencia, setDependencia] = useState('Gobierno');
   const [tipoDocumento, setTipoDocumento] = useState('Peticiones');
   const [documento, setDocumento] = useState(null);
-  const [data, setData] = useState([]); 
+  const [data, setData] = useState([]);
 
   const API_URL = 'http://localhost:8080/api/ventanilla';
 
@@ -46,16 +46,29 @@ export default function Ventanilla() {
       notificacion,
       dependencia,
       tipoDocumento,
-      documento: documento ? documento.name : '',
     };
 
     try {
-      await axios.post(`${API_URL}/formularios`, newEntry);
-      setData((prevData) => [...prevData, newEntry]);
+      // Guardar el formulario
+      const formularioResponse = await axios.post(`${API_URL}/formularios`, newEntry);
+      const savedEntry = formularioResponse.data;
 
+      // Subir el archivo asociado
+      if (documento) {
+        const formData = new FormData();
+        formData.append('archivo', documento);
+        const archivoResponse = await axios.post(`${API_URL}/formularios/${savedEntry.id}/documento`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        savedEntry.documento = archivoResponse.data; // URL del archivo subido
+      }
+
+      // Actualizar la tabla
+      setData((prevData) => [...prevData, savedEntry]);
+
+      // Resetear el formulario
       const radicadoResponse = await axios.get(`${API_URL}/siguiente-radicado`);
       setRadicado(radicadoResponse.data);
-
       setNombre('');
       setApellido('');
       setTelefono('');
@@ -103,7 +116,19 @@ export default function Ventanilla() {
     { accessorKey: 'notificacion', header: 'Notificación', size: 150 },
     { accessorKey: 'dependencia', header: 'Dependencia Asignada', size: 200 },
     { accessorKey: 'tipoDocumento', header: 'Tipo de Documento o Petición', size: 200 },
-    { accessorKey: 'documento', header: 'Documento Subido', size: 200 },
+    {
+      accessorKey: 'documento',
+      header: 'Documento Subido',
+      size: 200,
+      Cell: ({ cell }) =>
+        cell.getValue() ? (
+          <a href={cell.getValue()} target="_blank" rel="noopener noreferrer">
+            Descargar Documento
+          </a>
+        ) : (
+          'No disponible'
+        ),
+    },
   ], []);
 
   const table = useMaterialReactTable({
@@ -115,12 +140,12 @@ export default function Ventanilla() {
     <div className="container">
       <form className="form" onSubmit={handleSiguiente}>
         <h2>Formulario de Ventanilla</h2>
-        
+
         <div className="field">
           <label>Número de Radicado</label>
           <input type="text" value={radicado} readOnly className="input" />
         </div>
-        
+
         <div className="field">
           <label>Nombre</label>
           <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required className="input" />
@@ -175,12 +200,12 @@ export default function Ventanilla() {
 
         <div className="field">
           <label>Documento a Subir</label>
-          <input 
-            type="file" 
-            onChange={handleFileChange} 
-            required 
-            className="input" 
-            accept=".pdf, .doc, .docx, .xls, .xlsx" 
+          <input
+            type="file"
+            onChange={handleFileChange}
+            required
+            className="input"
+            accept=".pdf, .doc, .docx, .xls, .xlsx"
           />
         </div>
 

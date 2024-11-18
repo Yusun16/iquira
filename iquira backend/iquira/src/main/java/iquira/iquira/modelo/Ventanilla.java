@@ -18,34 +18,23 @@ public class Ventanilla {
     private String notificacion;
     private String tipoDocumento;
     private String documento;
-    private String dependencia; // Nuevo campo dependencia
+    private String dependencia;
 
-    // Getter y setter para dependencia
-    public String getDependencia() {
-        return dependencia;
-    }
-
-    public void setDependencia(String dependencia) {
-        this.dependencia = dependencia;
-    }
-
-    // Getter y setter para numeroRadicado
-    public int getNumeroRadicado() {
-        return numeroRadicado;
-    }
-
-    public void setNumeroRadicado(int numeroRadicado) {
-        this.numeroRadicado = numeroRadicado;
-    }
-
-    // Otros getters y setters para los demás campos
-
+    // Getters y Setters
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public int getNumeroRadicado() {
+        return numeroRadicado;
+    }
+
+    public void setNumeroRadicado(int numeroRadicado) {
+        this.numeroRadicado = numeroRadicado;
     }
 
     public String getNombre() {
@@ -102,5 +91,13 @@ public class Ventanilla {
 
     public void setDocumento(String documento) {
         this.documento = documento;
+    }
+
+    public String getDependencia() {
+        return dependencia;
+    }
+
+    public void setDependencia(String dependencia) {
+        this.dependencia = dependencia;
     }
 }
