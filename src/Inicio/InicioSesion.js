@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
-import logo from "../Inicio/img/logo.jpg";
+import logo from "../Inicio/img/escudo.png";
 
 export default function InicioSesion() {
   const navigate = useNavigate(); // Usa useNavigate para obtener la función de navegación

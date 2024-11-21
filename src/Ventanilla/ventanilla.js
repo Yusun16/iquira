@@ -11,7 +11,7 @@ export default function Ventanilla() {
   const [radicado, setRadicado] = useState('');
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
-  const [fecha, setFecha] = useState(getFormattedDate());
+  const [fecha] = useState(getFormattedDate());
   const [fechaLimite, setFechaLimite] = useState('');
   const [telefono, setTelefono] = useState('');
   const [notificacion, setNotificacion] = useState('correo');
