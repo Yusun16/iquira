@@ -14,6 +14,7 @@ public class Ventanilla {
     private String nombre;
     private String apellido;
     private LocalDate fecha;
+    private LocalDate fechaLimite; // Nuevo campo
     private String telefono;
     private String notificacion;
     private String tipoDocumento;
@@ -59,6 +60,14 @@ public class Ventanilla {
 
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public LocalDate getFechaLimite() {
+        return fechaLimite;
+    }
+
+    public void setFechaLimite(LocalDate fechaLimite) {
+        this.fechaLimite = fechaLimite;
     }
 
     public String getTelefono() {

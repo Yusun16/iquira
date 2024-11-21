@@ -5,40 +5,40 @@ import alcaldiaIquira from './img/alcaldiaIquira.png'; // Imagen de "Alcaldía d
 
 export default function Navegacion() {
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark" style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            width: '100%',
-            height: '150px', // Ajusta la altura según tus necesidades
-            backgroundColor: '#fff',
-            padding: '0 10px' // Añade un pequeño espacio para que el contenido no toque los bordes
-        }}>
-            {/* Sección izquierda - Escudo */}
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'center', height: '100%' }}>
-                <img 
-                    src={escudo} 
-                    alt="Escudo Íquira" 
-                    style={{ maxHeight: '100%', objectFit: 'contain' }}
-                />
-            </div>
+        <nav 
+            className="navbar navbar-expand-lg navbar-light" 
+            style={{ backgroundColor: '#fff', padding: '0 10px', height: 'auto' }} // Ajusta altura dinámica
+        >
+            <div className="container-fluid d-flex align-items-center justify-content-between">
+                {/* Sección izquierda - Escudo */}
+                <div className="d-flex justify-content-center flex-grow-1 flex-md-grow-0" style={{ height: '100%' }}>
+                    <img 
+                        src={escudo} 
+                        alt="Escudo Íquira" 
+                        style={{ maxHeight: '150px', objectFit: 'contain', width: 'auto' }}
+                    />
+                </div>
 
-            {/* Sección central - Texto */}
-            <div style={{ flex: 2, display: 'flex', justifyContent: 'center', height: '100%' }}>
-                <img 
-                    src={textoCentro} 
-                    alt="Texto Íquira" 
-                    style={{ maxHeight: '100%', objectFit: 'contain' }}
-                />
-            </div>
+                {/* Sección central - Texto */}
+                <div 
+                    className="d-flex justify-content-center flex-grow-2 flex-md-grow-1" 
+                    style={{ height: '100%' }}
+                >
+                    <img 
+                        src={textoCentro} 
+                        alt="Texto Íquira" 
+                        style={{ maxHeight: '150px', objectFit: 'contain', width: 'auto' }}
+                    />
+                </div>
 
-            {/* Sección derecha - Alcaldía de Íquira */}
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'center', height: '100%' }}>
-                <img 
-                    src={alcaldiaIquira} 
-                    alt="Alcaldía de Íquira" 
-                    style={{ maxHeight: '100%', objectFit: 'contain' }}
-                />
+                {/* Sección derecha - Alcaldía de Íquira */}
+                <div className="d-flex justify-content-center flex-grow-1 flex-md-grow-0" style={{ height: '100%' }}>
+                    <img 
+                        src={alcaldiaIquira} 
+                        alt="Alcaldía de Íquira" 
+                        style={{ maxHeight: '150px', objectFit: 'contain', width: 'auto' }}
+                    />
+                </div>
             </div>
         </nav>
     );

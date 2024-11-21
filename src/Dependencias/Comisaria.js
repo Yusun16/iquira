@@ -64,7 +64,7 @@ const CustomTextField = styled(TextField)({
   },
 });
 
-export default function Gobierno() {
+export default function Comisaria() {
   const [state, setState] = useState({ right: false });
   const [expanded, setExpanded] = useState(false);
   const [formularios, setFormularios] = useState([]);
@@ -87,15 +87,15 @@ export default function Gobierno() {
     };
   }, []);
 
-  const FORMULARIOS_API = 'http://localhost:8080/api/gobierno/formularios';
-  const DOCUMENTOS_API = 'http://localhost:8080/api/gobierno/documento';
+  const FORMULARIOS_API = 'http://localhost:8080/api/comisaria/formularios';
+  const DOCUMENTOS_API = 'http://localhost:8080/api/comisaria/documento';
 
   useEffect(() => {
     const fetchFormularios = async () => {
       try {
         setLoading(true);
         const response = await axios.get(FORMULARIOS_API);
-        setFormularios(response.data.filter((item) => item.dependencia === 'Gobierno'));
+        setFormularios(response.data.filter((item) => item.dependencia === 'Comisaría'));
       } catch (error) {
         console.error('Error al obtener formularios:', error);
         setError('No se pudieron cargar los datos. Intenta nuevamente.');
@@ -210,7 +210,7 @@ export default function Gobierno() {
               >
                 <div style={{ width: '250px', padding: '20px' }}>
                   <Typography variant="h6" style={{ marginBottom: '10px' }}>
-                    Menú de Gobierno
+                    Menú de Comisaria
                   </Typography>
                   <CustomFormControl>
                     <Typography variant="body1" style={{ marginBottom: '10px', color: '#666' }}>
