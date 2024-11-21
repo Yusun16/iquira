@@ -7,6 +7,12 @@ import OlvidarContraseña from "./OlvidarContraseña/OlvidarContraseña";
 import Ventanilla from "./Ventanilla/ventanilla";
 import Envio from "./Envio/Envio";
 import Gobierno from "./Dependencias/Gobierno";
+import Tesoreria from "./Dependencias/Tesoreria";
+import Planeacion from "./Dependencias/Planeacion";
+import Despacho from "./Dependencias/Despacho";
+import Almacen from "./Dependencias/Almacen";
+import Comisaria from "./Dependencias/Comisaria";
+import Salud from "./Dependencias/Salud";
 
 function App() {
   return (
@@ -42,6 +48,12 @@ function Layout() {
         <Route path="/ventanilla" element={<Ventanilla />} />
         <Route path="/envio" element={<Envio />} />
         <Route path="/gobierno" element={<Gobierno/>}/>
+        <Route path="/tesoreria" element={<Tesoreria/>}/>
+        <Route path="/planeacion" element={<Planeacion/>}/>
+        <Route path="/despacho" element={<Despacho/>}/>
+        <Route path="/almacen" element={<Almacen/>}/>
+        <Route path="/comisaria" element={<Comisaria/>}/>
+        <Route path="/salud" element={<Salud/>}/>
       </Routes>
     </div>
   );
