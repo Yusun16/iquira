@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -25,21 +25,33 @@ import {
   Paper,
   CircularProgress,
 } from '@mui/material';
+import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
+import axios from 'axios';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function Dashboard() {
   const [totals, setTotals] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [info, setInfo] = useState([]);
 
   // URL de la API principal
   const apiEndpoint = 'http://localhost:8080/api/ventanilla/formularios';
+  const API_URL = 'http://localhost:8080/iquira/admin/listar-usuarios';
 
   // Llamada a la API
   useEffect(() => {
+    const token = localStorage.getItem('token');
     const fetchTotals = async () => {
+
       try {
-        const response = await fetch(apiEndpoint);
+        const response = await fetch(apiEndpoint, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: 'include',
+        });
         const data = await response.json();
 
         // Agrupar por dependencia y contar documentos
@@ -66,21 +78,71 @@ function Dashboard() {
     fetchTotals();
   }, []);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    const fetchData = async () => {
+      try {
+        const respuesta = await axios.get(`${API_URL}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+        setInfo(respuesta.data);
+
+      } catch (error) {
+        console.error('Error al obtener los datos:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+
   // Datos dinámicos del gráfico
   const chartData = totals.length > 0
     ? {
-        labels: totals.map((item) => item.dependencia), // Dependencias como etiquetas
-        datasets: [
-          {
-            label: 'Total de Documentos',
-            data: totals.map((item) => item.total), // Totales por dependencia
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
-          },
-        ],
-      }
+      labels: totals.map((item) => item.dependencia), // Dependencias como etiquetas
+      datasets: [
+        {
+          label: 'Total de Documentos',
+          data: totals.map((item) => item.total), // Totales por dependencia
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        },
+      ],
+    }
     : null;
+
+  const roleMapping = {
+    'ROLE_ADMIN': 'Administrador Principal',
+    'ROLE_ALMACEN': 'Almacen',
+    'ROLE_COMISARIA': 'Comisaria',
+    'ROLE_DESPACHO': 'Despacho',
+    'ROLE_GOBIERNO': 'Gobierno',
+    'ROLE_PLANEACION': 'Planeacion',
+    'ROLE_SALUD': 'Salud',
+    'ROLE_TESORERIA': 'Tesoreria',
+    'ROLE_USER': 'Usuario',
+    'ROLE_VENTANILLA': 'Ventanilla',
+  };
+
+  const columns = useMemo(() => [
+    { accessorKey: 'nombre', header: 'Nombre', size: 150 },
+    { accessorKey: 'apellido', header: 'Apellido', size: 150 },
+    { accessorKey: 'fecha', header: 'Fecha', size: 150 },
+    { accessorKey: 'username', header: 'Correo', size: 200 },
+    {
+      accessorKey: 'roles',
+      header: 'Roles',
+      size: 200,
+      Cell: ({ row }) => {
+        return row.original.roles
+          .map(role => roleMapping[role.name] || role.name)
+          .join(', ');
+      }
+    }
+  ], []);
 
   return (
     <Container maxWidth="lg" style={{ paddingTop: '2rem' }}>
@@ -142,6 +204,11 @@ function Dashboard() {
           </Card>
         </Grid>
       </Grid>
+
+      <MaterialReactTable
+        columns={columns}
+        data={info}
+      />
     </Container>
   );
 }

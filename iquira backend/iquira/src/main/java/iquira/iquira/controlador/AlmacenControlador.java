@@ -1,6 +1,7 @@
 package iquira.iquira.controlador;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import iquira.iquira.modelo.Ventanilla;
 import iquira.iquira.servicio.IVentanillaServicio;
@@ -22,6 +23,7 @@ public class AlmacenControlador {
     }
 
     @GetMapping("/formularios")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ALMACEN')")
     public ResponseEntity<List<Ventanilla>> obtenerFormulariosAlmacen() {
         try {
             List<Ventanilla> formularios = ventanillaServicio.obtenerFormulariosPorDependencia("Almacén");
@@ -32,6 +34,7 @@ public class AlmacenControlador {
     }
 
     @GetMapping("/documento/{nombreArchivo}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ALMACEN')")
     public ResponseEntity<byte[]> descargarDocumento(@PathVariable String nombreArchivo) {
         try {
             Path rutaArchivo = Paths.get("archivos_subidos/" + nombreArchivo);

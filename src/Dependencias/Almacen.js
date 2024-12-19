@@ -14,17 +14,8 @@ import {
   InputLabel,
 } from '@mui/material';
 import axios from 'axios';
-import { AuthenticationContext, SessionContext } from '@toolpad/core/AppProvider';
-import { Account } from '@toolpad/core/Account';
 import { styled } from '@mui/system';
-
-const demoSession = {
-  user: {
-    name: 'Bharat Kashyap',
-    email: 'bharatkashyap@outlook.com',
-    image: 'https://avatars.githubusercontent.com/u/19550456',
-  },
-};
+import CerrarSesion from '../Inicio/CerrarSesion';
 
 const CustomFormControl = styled(FormControl)({
   marginBottom: '20px',
@@ -72,29 +63,23 @@ export default function Almacen() {
   const [selectedId, setSelectedId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [session, setSession] = useState(demoSession);
   const [filtroDias, setFiltroDias] = useState('Todos');
   const [filtroNombre, setFiltroNombre] = useState('');
-
-  const authentication = React.useMemo(() => {
-    return {
-      signIn: () => {
-        setSession(demoSession);
-      },
-      signOut: () => {
-        setSession(null);
-      },
-    };
-  }, []);
 
   const FORMULARIOS_API = 'http://localhost:8080/api/almacen/formularios';
   const DOCUMENTOS_API = 'http://localhost:8080/api/almacen/documento';
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
     const fetchFormularios = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(FORMULARIOS_API);
+        const response = await axios.get(FORMULARIOS_API, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setFormularios(response.data.filter((item) => item.dependencia === 'Almacén'));
       } catch (error) {
         console.error('Error al obtener formularios:', error);
@@ -134,10 +119,14 @@ export default function Almacen() {
 
     const formData = new FormData();
     formData.append('archivo', archivo);
+    const token = localStorage.getItem('token');
 
     try {
       await axios.post(`${DOCUMENTOS_API}/${id}/subir`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
       });
       alert('Archivo subido exitosamente.');
     } catch (error) {
@@ -183,154 +172,150 @@ export default function Almacen() {
   }
 
   return (
-    <AuthenticationContext.Provider value={authentication}>
-      <SessionContext.Provider value={session}>
-        <div>
-          {['right'].map((anchor) => (
-            <React.Fragment key={anchor}>
-              <Button
-                variant="contained"
-                onClick={toggleDrawer(anchor, true)}
+    <div>
+      {['right'].map((anchor) => (
+        <React.Fragment key={anchor}>
+          <Button
+            variant="contained"
+            onClick={toggleDrawer(anchor, true)}
+            style={{
+              position: 'absolute',
+              right: '10px',
+              top: '162px',
+              zIndex: 1000,
+              borderRadius: '50px',
+              padding: '10px 20px',
+            }}
+          >
+            <i className="fa-solid fa-bars" style={{ fontSize: '20px' }}></i>
+          </Button>
+          <SwipeableDrawer
+            anchor={anchor}
+            open={state[anchor]}
+            onClose={toggleDrawer(anchor, false)}
+            onOpen={toggleDrawer(anchor, true)}
+          >
+            <div style={{ width: '250px', padding: '20px' }}>
+              <Typography variant="h6" style={{ marginBottom: '10px' }}>
+                Menú de Almacen
+              </Typography>
+              <CustomFormControl>
+                <Typography variant="body1" style={{ marginBottom: '10px', color: '#666' }}>
+                  Filtrar por días restantes
+                </Typography>
+                <Select
+                  value={filtroDias}
+                  onChange={(e) => setFiltroDias(e.target.value)}
+                >
+                  <MenuItem value="Todos">Todos</MenuItem>
+                  <MenuItem value="Menor a 5 días">Menor a 5 días</MenuItem>
+                  <MenuItem value="Mayor o igual a 5 días">Mayor o igual a 5 días</MenuItem>
+                </Select>
+              </CustomFormControl>
+              <Typography variant="body1" style={{ marginBottom: '10px', color: '#666' }}>
+                Filtrar por nombre del usuario
+              </Typography>
+              <CustomTextField
+                placeholder="Escribe el nombre"
+                value={filtroNombre}
+                onChange={(e) => setFiltroNombre(e.target.value)}
+              />
+              <CerrarSesion />
+            </div>
+          </SwipeableDrawer>
+        </React.Fragment>
+      ))}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
+        <div style={{ width: '100%', maxWidth: '800px' }}>
+          {formulariosFiltrados.map((formulario) => (
+            <React.Fragment key={formulario.numeroRadicado}>
+              <Card
                 style={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '162px',
-                  zIndex: 1000,
-                  borderRadius: '50px',
-                  padding: '10px 20px',
+                  marginBottom: '10px',
+                  borderRadius: '15px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
                 }}
+                onClick={() => handleExpandClick(formulario.numeroRadicado)}
               >
-                <i className="fa-solid fa-bars" style={{ fontSize: '20px' }}></i>
-              </Button>
-              <SwipeableDrawer
-                anchor={anchor}
-                open={state[anchor]}
-                onClose={toggleDrawer(anchor, false)}
-                onOpen={toggleDrawer(anchor, true)}
-              >
-                <div style={{ width: '250px', padding: '20px' }}>
-                  <Typography variant="h6" style={{ marginBottom: '10px' }}>
-                    Menú de Almacen
+                <CardContent>
+                  <Typography variant="h6" style={{ fontWeight: 'bold' }}>
+                    Documento: {formulario.documento ? formulario.documento.split('/').pop() : 'No disponible'}
                   </Typography>
-                  <CustomFormControl>
-                    <Typography variant="body1" style={{ marginBottom: '10px', color: '#666' }}>
-                      Filtrar por días restantes
-                    </Typography>
-                    <Select
-                      value={filtroDias}
-                      onChange={(e) => setFiltroDias(e.target.value)}
-                    >
-                      <MenuItem value="Todos">Todos</MenuItem>
-                      <MenuItem value="Menor a 5 días">Menor a 5 días</MenuItem>
-                      <MenuItem value="Mayor o igual a 5 días">Mayor o igual a 5 días</MenuItem>
-                    </Select>
-                  </CustomFormControl>
-                  <Typography variant="body1" style={{ marginBottom: '10px', color: '#666' }}>
-                    Filtrar por nombre del usuario
+                  <Typography variant="body2" style={{ color: '#666' }}>
+                    Fecha Límite: {formulario.fechaLimite}
                   </Typography>
-                  <CustomTextField
-                    placeholder="Escribe el nombre"
-                    value={filtroNombre}
-                    onChange={(e) => setFiltroNombre(e.target.value)}
-                  />
-                  <Account />
-                </div>
-              </SwipeableDrawer>
+                  <Typography
+                    variant="body2"
+                    style={{
+                      color: calcularDiasRestantes(formulario.fechaLimite) > 4
+                        ? 'green'
+                        : calcularDiasRestantes(formulario.fechaLimite) >= 2
+                          ? 'orange'
+                          : 'red',
+                    }}
+                  >
+                    Estado: {calcularDiasRestantes(formulario.fechaLimite) > 0
+                      ? `Pendiente (${calcularDiasRestantes(formulario.fechaLimite)} días restantes)`
+                      : 'Vencido'}
+                  </Typography>
+                </CardContent>
+              </Card>
+              <Collapse in={selectedId === formulario.numeroRadicado} timeout="auto" unmountOnExit>
+                <Card
+                  style={{
+                    marginBottom: '10px',
+                    padding: '20px',
+                    borderRadius: '15px',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  }}
+                >
+                  <Typography variant="subtitle1" style={{ fontWeight: 'bold' }}>
+                    Número de Radicado: {formulario.numeroRadicado}
+                  </Typography>
+                  <Typography variant="subtitle1" style={{ fontWeight: 'bold' }}>
+                    Usuario: {`${formulario.nombre} ${formulario.apellido}`}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ marginTop: '10px', borderRadius: '50px' }}
+                    onClick={() => {
+                      if (formulario.documento) {
+                        window.open(formulario.documento, '_blank');
+                      } else {
+                        alert('No hay un archivo asociado.');
+                      }
+                    }}
+                  >
+                    Descargar
+                  </Button>
+                  <div style={{ marginTop: '10px' }}>
+                    <label htmlFor={`uploadFile-${formulario.numeroRadicado}`}>
+                      Subir Archivo:
+                    </label>
+                    <input
+                      type="file"
+                      id={`uploadFile-${formulario.numeroRadicado}`}
+                      style={{ display: 'block', marginTop: '5px' }}
+                      onChange={(e) => setArchivo(e.target.files[0])}
+                    />
+                  </div>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    style={{ marginTop: '10px', borderRadius: '50px' }}
+                    onClick={() => handleFileUpload(formulario.numeroRadicado)}
+                  >
+                    Guardar
+                  </Button>
+                </Card>
+              </Collapse>
             </React.Fragment>
           ))}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px' }}>
-            <div style={{ width: '100%', maxWidth: '800px' }}>
-              {formulariosFiltrados.map((formulario) => (
-                <React.Fragment key={formulario.numeroRadicado}>
-                  <Card
-                    style={{
-                      marginBottom: '10px',
-                      borderRadius: '15px',
-                      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s',
-                    }}
-                    onClick={() => handleExpandClick(formulario.numeroRadicado)}
-                  >
-                    <CardContent>
-                      <Typography variant="h6" style={{ fontWeight: 'bold' }}>
-                        Documento: {formulario.documento ? formulario.documento.split('/').pop() : 'No disponible'}
-                      </Typography>
-                      <Typography variant="body2" style={{ color: '#666' }}>
-                        Fecha Límite: {formulario.fechaLimite}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        style={{
-                          color: calcularDiasRestantes(formulario.fechaLimite) > 4
-                            ? 'green'
-                            : calcularDiasRestantes(formulario.fechaLimite) >= 2
-                              ? 'orange'
-                              : 'red',
-                        }}
-                      >
-                        Estado: {calcularDiasRestantes(formulario.fechaLimite) > 0
-                          ? `Pendiente (${calcularDiasRestantes(formulario.fechaLimite)} días restantes)`
-                          : 'Vencido'}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                  <Collapse in={selectedId === formulario.numeroRadicado} timeout="auto" unmountOnExit>
-                    <Card
-                      style={{
-                        marginBottom: '10px',
-                        padding: '20px',
-                        borderRadius: '15px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                      }}
-                    >
-                      <Typography variant="subtitle1" style={{ fontWeight: 'bold' }}>
-                        Número de Radicado: {formulario.numeroRadicado}
-                      </Typography>
-                      <Typography variant="subtitle1" style={{ fontWeight: 'bold' }}>
-                        Usuario: {`${formulario.nombre} ${formulario.apellido}`}
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        style={{ marginTop: '10px', borderRadius: '50px' }}
-                        onClick={() => {
-                          if (formulario.documento) {
-                            window.open(formulario.documento, '_blank');
-                          } else {
-                            alert('No hay un archivo asociado.');
-                          }
-                        }}
-                      >
-                        Descargar
-                      </Button>
-                      <div style={{ marginTop: '10px' }}>
-                        <label htmlFor={`uploadFile-${formulario.numeroRadicado}`}>
-                          Subir Archivo:
-                        </label>
-                        <input
-                          type="file"
-                          id={`uploadFile-${formulario.numeroRadicado}`}
-                          style={{ display: 'block', marginTop: '5px' }}
-                          onChange={(e) => setArchivo(e.target.files[0])}
-                        />
-                      </div>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        style={{ marginTop: '10px', borderRadius: '50px' }}
-                        onClick={() => handleFileUpload(formulario.numeroRadicado)}
-                      >
-                        Guardar
-                      </Button>
-                    </Card>
-                  </Collapse>
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
         </div>
-      </SessionContext.Provider>
-    </AuthenticationContext.Provider>
+      </div>
+    </div>
   );
 }

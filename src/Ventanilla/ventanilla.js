@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import '../index.css';
+import CerrarSesion from '../Inicio/CerrarSesion';
 
 export default function Ventanilla() {
   const [radicado, setRadicado] = useState('');
@@ -28,12 +29,22 @@ export default function Ventanilla() {
   const API_URL = 'http://localhost:8080/api/ventanilla';
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/formularios`);
+        const response = await axios.get(`${API_URL}/formularios`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
         setData(response.data);
 
-        const radicadoResponse = await axios.get(`${API_URL}/siguiente-radicado`);
+        const radicadoResponse = await axios.get(`${API_URL}/siguiente-radicado`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
         setRadicado(radicadoResponse.data);
       } catch (error) {
         console.error('Error al obtener los datos:', error);
@@ -65,8 +76,13 @@ export default function Ventanilla() {
       tipoDocumento,
     };
 
+    const token = localStorage.getItem('token');
     try {
-      const formularioResponse = await axios.post(`${API_URL}/formularios`, newEntry);
+      const formularioResponse = await axios.post(`${API_URL}/formularios`, newEntry, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       const savedEntry = formularioResponse.data;
 
       if (documento) {
@@ -78,7 +94,11 @@ export default function Ventanilla() {
             `${API_URL}/formularios/${savedEntry.id}/documento`,
             formData,
             {
-              headers: { 'Content-Type': 'multipart/form-data' },
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+              },
+
             }
           );
           savedEntry.documento = archivoResponse.data;
@@ -89,7 +109,11 @@ export default function Ventanilla() {
 
       setData((prevData) => [...prevData, savedEntry]);
 
-      const radicadoResponse = await axios.get(`${API_URL}/siguiente-radicado`);
+      const radicadoResponse = await axios.get(`${API_URL}/siguiente-radicado`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
       setRadicado(radicadoResponse.data);
       resetForm();
       showModal('Éxito', 'Formulario guardado con éxito.');
@@ -179,6 +203,7 @@ export default function Ventanilla() {
 
   return (
     <div className="container">
+      <CerrarSesion />
       <form className="form" onSubmit={handleSiguiente}>
         <h2>Formulario de Ventanilla</h2>
 

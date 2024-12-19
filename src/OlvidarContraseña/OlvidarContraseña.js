@@ -1,12 +1,39 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import logo from "../Inicio/img/logo.jpg";
 
 export default function OlvidarContraseña() {
-  const navigate = useNavigate(); // Usa useNavigate para obtener la función de navegación
+  const [username, setUsername] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
 
-  const handleLoginClick = () => {
-    navigate('/'); // Redirige al usuario a /dasboard
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const response = await axios.post('http://localhost:8080/iquira/iquiraccess/verify-correo', null, {
+        params: {
+          username,
+        },
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      setSuccessMessage(response.data);
+      navigate("/verificar-correo")
+    } catch (error) {
+      if (error.response) {
+        setErrorMessage(error.response.data.message || "Correo o cedula, no validos!!!");
+      } else {
+        setErrorMessage('Verifica tus datos y vuelva a intentarlo, nuevamente.');
+      }
+    }
   };
 
   return (
@@ -26,7 +53,7 @@ export default function OlvidarContraseña() {
                   </div>
                   <div className="col-md-6 col-lg-7 d-flex align-items-center">
                     <div className="card-body p-4 p-lg-5 text-black">
-                      <form>
+                      <form onSubmit={handleSubmit}>
                         <h5 className="fw-normal mb-3 pb-3" style={{ letterSpacing: '1px' }}>
                           ¿olvidaste tu contraseña?
                         </h5>
@@ -38,16 +65,21 @@ export default function OlvidarContraseña() {
                             type="email"
                             id="form2Example17"
                             className="form-control form-control-lg"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
                           />
                         </div>
                         <div className="pt-1 mb-4">
                           <button
                             className="btn btn-dark btn-lg btn-block"
-                            type="button"
-                            onClick={handleLoginClick} // Usa onClick para manejar la navegación
+                            type="submit"
+
                           >
-                            Recuperar contraseña
+                            Confirmar
                           </button>
+                          {errorMessage && <p className="error-message">{errorMessage}</p>}
+                          {successMessage && <p className="success-message">{successMessage}</p>}
                         </div>
                       </form>
                     </div>

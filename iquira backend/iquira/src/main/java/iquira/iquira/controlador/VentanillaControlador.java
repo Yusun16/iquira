@@ -2,6 +2,7 @@ package iquira.iquira.controlador;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import iquira.iquira.modelo.Ventanilla;
@@ -12,12 +13,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static iquira.iquira.constant.Constant.DIRECTORIO;
+
 @RestController
 @RequestMapping("/api/ventanilla")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(value = "http://localhost:3000")
 public class VentanillaControlador {
 
-    private static final String DIRECTORIO = "archivos_subidos/";
     private final IVentanillaServicio ventanillaServicio;
 
     public VentanillaControlador(IVentanillaServicio ventanillaServicio) {
@@ -26,6 +28,7 @@ public class VentanillaControlador {
 
     // Obtener el siguiente número de radicado
     @GetMapping("/siguiente-radicado")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VENTANILLA')")
     public ResponseEntity<String> obtenerSiguienteNumeroRadicado() {
         String siguienteRadicado = ventanillaServicio.obtenerSiguienteNumeroRadicado();
         return ResponseEntity.ok(siguienteRadicado);
@@ -33,12 +36,14 @@ public class VentanillaControlador {
 
     // Listar todos los formularios
     @GetMapping("/formularios")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VENTANILLA')")
     public List<Ventanilla> obtenerFormularios() {
         return ventanillaServicio.listarFormularios();
     }
 
     // Crear un nuevo formulario
     @PostMapping("/formularios")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VENTANILLA')")
     public ResponseEntity<Ventanilla> agregarFormulario(@RequestBody Ventanilla formulario) {
         try {
             formulario.setNumeroRadicado(
@@ -53,6 +58,7 @@ public class VentanillaControlador {
 
     // Buscar formularios por parámetros (radicado, nombre, apellido)
     @GetMapping("/buscarFormulario")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VENTANILLA')")
     public ResponseEntity<List<Ventanilla>> buscarFormularioPorParametros(
             @RequestParam(required = false) Integer radicado,
             @RequestParam(required = false) String nombre,
@@ -68,6 +74,7 @@ public class VentanillaControlador {
 
     // Actualizar un formulario existente
     @PutMapping("/formularios/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VENTANILLA')")
     public ResponseEntity<String> actualizarFormulario(
             @PathVariable Long id,
             @RequestBody Ventanilla formulario
@@ -82,6 +89,7 @@ public class VentanillaControlador {
 
     // Subir un documento asociado a un formulario
     @PostMapping("/formularios/{id}/documento")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VENTANILLA')")
     public ResponseEntity<String> subirDocumento(
             @PathVariable Long id,
             @RequestParam("archivo") MultipartFile archivo) {
@@ -116,6 +124,7 @@ public class VentanillaControlador {
 
     // Descarga de documentos subidos
     @GetMapping("/documentos/{nombreArchivo}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('VENTANILLA')")
     public ResponseEntity<byte[]> descargarArchivo(@PathVariable String nombreArchivo) {
         try {
             Path rutaArchivo = Paths.get(DIRECTORIO + nombreArchivo);
