@@ -135,6 +135,7 @@ export default function Tesoreria() {
     }
   };
 
+  
   const filtrarFormularios = () => {
     let filtrados = formularios;
 

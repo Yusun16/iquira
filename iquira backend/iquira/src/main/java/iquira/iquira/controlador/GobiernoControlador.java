@@ -3,6 +3,7 @@ package iquira.iquira.controlador;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import iquira.iquira.modelo.Ventanilla;
 import iquira.iquira.servicio.IVentanillaServicio;
 
@@ -46,4 +47,18 @@ public class GobiernoControlador {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/documento/{radicado}/subir")
+    @PreAuthorize("hasRole('GOBIERNO')")
+    public ResponseEntity<?> subirDocumento(@PathVariable Long radicado, @RequestParam("archivo") MultipartFile archivo) {
+        try {
+            String nombreArchivo = archivo.getOriginalFilename();
+            Path rutaArchivo = Paths.get("archivos_subidos/" + nombreArchivo);
+            Files.write(rutaArchivo, archivo.getBytes());
+            return ResponseEntity.ok("Archivo subido exitosamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al subir el archivo.");
+        }
+    }
+
 }

@@ -16,6 +16,7 @@ import {
 import axios from 'axios';
 import { styled } from '@mui/system';
 import CerrarSesion from '../Inicio/CerrarSesion';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 const CustomFormControl = styled(FormControl)({
   marginBottom: '20px',
@@ -65,6 +66,7 @@ export default function Gobierno() {
   const [error, setError] = useState(null);
   const [filtroDias, setFiltroDias] = useState('Todos');
   const [filtroNombre, setFiltroNombre] = useState('');
+  const [archivos, setArchivos] = useState({});
 
   const FORMULARIOS_API = 'http://localhost:8080/api/gobierno/formularios';
   const DOCUMENTOS_API = 'http://localhost:8080/api/gobierno/documento';
@@ -110,8 +112,16 @@ export default function Gobierno() {
     const diferencia = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
     return diferencia > 0 ? diferencia : 0;
   };
+  const handleArchivoChange = (e, numeroRadicado) => {
+    const file = e.target.files[0];
+    if (file) {
+      setArchivos((prev) => ({ ...prev, [numeroRadicado]: file }));
+    }
+  };
 
-  const handleFileUpload = async (id) => {
+  const handleFileUpload = async (numeroRadicado) => {
+    const archivo = archivos[numeroRadicado];
+
     if (!archivo) {
       alert('Por favor selecciona un archivo para subir.');
       return;
@@ -122,7 +132,7 @@ export default function Gobierno() {
     const token = localStorage.getItem('token');
 
     try {
-      await axios.post(`${DOCUMENTOS_API}/${id}/subir`, formData, {
+      await axios.post(`${DOCUMENTOS_API}/${numeroRadicado}/subir`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -134,6 +144,36 @@ export default function Gobierno() {
       alert('Hubo un problema al subir el archivo.');
     }
   };
+
+
+  const descargarDocumento = async (nombreArchivo) => {
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/gobierno/documento/${nombreArchivo}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('No se pudo descargar el archivo.');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nombreArchivo;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar el archivo:', error);
+      alert('Hubo un problema al descargar el archivo.');
+    }
+  };
+
 
   const filtrarFormularios = () => {
     let filtrados = formularios;
@@ -282,35 +322,43 @@ export default function Gobierno() {
                     variant="contained"
                     color="primary"
                     style={{ marginTop: '10px', borderRadius: '50px' }}
-                    onClick={() => {
-                      if (formulario.documento) {
-                        window.open(formulario.documento, '_blank');
-                      } else {
-                        alert('No hay un archivo asociado.');
-                      }
-                    }}
+                    onClick={() => descargarDocumento(formulario.documento?.split('/').pop())}
                   >
                     Descargar
                   </Button>
-                  <div style={{ marginTop: '10px' }}>
+
+                  <div style={{ marginTop: '20px' }}>
                     <label htmlFor={`uploadFile-${formulario.numeroRadicado}`}>
-                      Subir Archivo:
+                      <Button
+                        variant="contained"
+                        component="span"
+                        color="primary"
+                        startIcon={<UploadFileIcon />}
+                      >
+                        Subir Archivo
+                      </Button>
                     </label>
                     <input
                       type="file"
                       id={`uploadFile-${formulario.numeroRadicado}`}
-                      style={{ display: 'block', marginTop: '5px' }}
-                      onChange={(e) => setArchivo(e.target.files[0])}
+                      style={{ display: 'none' }}
+                      accept=".pdf,.doc,.docx,.xls,.xlsx"
+                      onChange={(e) => handleArchivoChange(e, formulario.numeroRadicado)}
                     />
+                    {archivos[formulario.numeroRadicado] && (
+                      <Typography variant="body2" style={{ marginTop: '10px' }}>
+                        Archivo seleccionado: {archivos[formulario.numeroRadicado].name}
+                      </Typography>
+                    )}
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      style={{ marginTop: '10px' }}
+                      onClick={() => handleFileUpload(formulario.numeroRadicado)}
+                    >
+                      Guardar Archivo
+                    </Button>
                   </div>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    style={{ marginTop: '10px', borderRadius: '50px' }}
-                    onClick={() => handleFileUpload(formulario.numeroRadicado)}
-                  >
-                    Guardar
-                  </Button>
                 </Card>
               </Collapse>
             </React.Fragment>

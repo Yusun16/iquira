@@ -63,10 +63,12 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception ->exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth->
-                        auth.requestMatchers("/iquira/iquiraccess/**").permitAll()
-                                .requestMatchers("/api/archivos/**").permitAll()
-                                .anyRequest().authenticated());
+                .authorizeHttpRequests(auth ->
+                auth.requestMatchers("/iquira/iquiraccess/**").permitAll()
+                        .requestMatchers("/api/archivos/login", "/api/archivos/register").permitAll()
+                        .requestMatchers("/api/archivos/**", "/api/gobierno/**", "/api/planeacion/**").authenticated()
+                        .anyRequest().authenticated()
+        );
 
         http.authenticationProvider(authenticationProvider());
 

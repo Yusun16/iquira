@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import iquira.iquira.modelo.Ventanilla;
 import iquira.iquira.servicio.IVentanillaServicio;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +45,19 @@ public class PlaneacionControlador {
                     .body(archivo);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/documento/{radicado}/subir")
+    @PreAuthorize("hasRole('PLANEACION')")
+    public ResponseEntity<?> subirDocumento(@PathVariable Long radicado, @RequestParam("archivo") MultipartFile archivo) {
+        try {
+            String nombreArchivo = archivo.getOriginalFilename();
+            Path rutaArchivo = Paths.get("archivos_subidos/" + nombreArchivo);
+            Files.write(rutaArchivo, archivo.getBytes());
+            return ResponseEntity.ok("Archivo subido exitosamente.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al subir el archivo.");
         }
     }
 }
